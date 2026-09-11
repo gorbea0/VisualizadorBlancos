@@ -1,0 +1,327 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LIMS Blancos y Duplicados</title>
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;color:#17202a;background:#f6f8fb}body{margin:0;padding:24px}.wrap{max-width:1300px;margin:auto}.card{background:#fff;border:1px solid #dfe5ee;border-radius:14px;padding:14px;margin:10px 0;box-shadow:0 1px 3px #0001}h1{margin:0 0 6px}h2{font-size:17px;margin:0 0 10px}.muted{color:#667085}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:850px){.grid{grid-template-columns:1fr}}textarea,input,select,button{font:inherit}textarea{width:100%;min-height:75px;border:1px solid #cad3df;border-radius:10px;padding:10px;box-sizing:border-box}input[type=date],select{border:1px solid #cad3df;border-radius:8px;padding:6px;font-size:13px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{border:0;border-radius:9px;padding:7px 10px;background:#1f6feb;color:white;cursor:pointer;font-weight:650;font-size:13px;line-height:1.15}.btn.secondary{background:#667085}.tabs{display:flex;gap:8px}.tab{background:#e8eef7;color:#17202a}.tab.active{background:#1f6feb;color:#fff}.summary{background:#f0f7ff;border:1px solid #b9d7ff;border-radius:10px;padding:10px 12px;margin-top:12px}.bad{background:#ffecec!important;color:#8a1111;font-weight:700}.good{background:#ecfff1}.warn{background:#fff8df}.tablewrap{overflow:auto;max-height:640px;border:1px solid #dfe5ee;border-radius:10px}table{border-collapse:collapse;width:100%;font-size:13px}th,td{border-bottom:1px solid #edf1f7;padding:6px 8px;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#f0f4f9;z-index:1}details summary{cursor:pointer;font-weight:650;color:#1f6feb}pre{white-space:pre-wrap;background:#0b1020;color:#e6edf3;border-radius:10px;padding:12px;max-height:180px;overflow:auto}.charts{display:grid;grid-template-columns:1fr 1fr;gap:14px}@media(max-width:1000px){.charts{grid-template-columns:1fr}}canvas{width:100%;height:300px;border:1px solid #dfe5ee;border-radius:10px;background:#fff}.calendarWrap{margin-top:14px}.calendarWrap canvas{height:auto;min-height:180px;display:block}.chartTooltip{position:fixed;z-index:50;display:none;pointer-events:none;background:#111827;color:#fff;padding:7px 9px;border-radius:7px;font-size:12px;line-height:1.35;box-shadow:0 3px 12px #0004;max-width:260px}.small{font-size:13px}.modal{display:none;position:fixed;inset:0;background:#0008;z-index:20;align-items:center;justify-content:center;padding:20px}.modal.open{display:flex}.modalbox{background:#fff;border-radius:14px;max-width:900px;width:100%;max-height:85vh;overflow:auto;padding:18px}.modalbox h2{margin-top:0}.modalbox .right{float:right}.pill{display:inline-block;background:#eef4ff;border:1px solid #c8dafb;border-radius:999px;padding:5px 9px;margin:3px}.filters,.toolbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}.toolbar{justify-content:space-between}.leftTools,.rightTools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.compactdetails{margin:8px 0}.compactdetails .row{padding-top:8px}.compactdetails summary{font-size:13px}.filters{margin-left:auto}.stats{background:#f8fafc;border:1px solid #dfe5ee;border-radius:10px;padding:9px 11px;margin:8px 0}.nowrap{white-space:nowrap}.sepLeft{margin-left:22px}
+</style></head><body><div class="wrap"><h1>LIMS · Blancos y duplicados CCI Inspección Laboratorio</h1><div class="muted"></div>
+<details class="card compactdetails"><summary>Codificación, CSV de muestras y opciones avanzadas</summary>
+<div class="row"><label>Leer CSV como <select id="encoding"><option value="utf-8" selected>UTF-8</option><option value="windows-1252">Windows-1252 / ANSI Excel español</option><option value="iso-8859-1">ISO-8859-1</option></select></label><span class="muted small">La exportación sale en UTF-8 con BOM para Excel.</span></div>
+<hr style="border:0;border-top:1px solid #e5e7eb;margin:12px 0">
+<h2>CSV de muestras <span class="muted small">(opcional)</span></h2>
+<p class="small muted" style="margin:0 0 6px">Normalmente se usan los CSV configurados en GitHub. También puedes añadir o sustituirlos seleccionando ficheros locales.</p>
+<p><input id="sampleFiles" type="file" multiple accept=".csv,text/csv"></p>
+<label class="small" for="sampleUrls"><b>URLs de GitHub de muestras</b></label>
+<textarea id="sampleUrls">https://github.com/gorbea0/LIMS/blob/main/REPORTER_SAMPLE_20250905.CSV
+https://github.com/gorbea0/LIMS/blob/main/REPORTER_SAMPLE_20251219.CSV</textarea>
+<hr style="border:0;border-top:1px solid #e5e7eb;margin:12px 0">
+<h2>CSV de análisis <span class="muted small">(opcional)</span></h2>
+<p class="small muted" style="margin:0 0 6px">Normalmente se usan los CSV de análisis configurados en GitHub. También puedes añadir ficheros locales.</p>
+<p><input id="analysisFiles" type="file" multiple accept=".csv,text/csv"></p>
+<label class="small" for="analysisUrls"><b>URLs de GitHub de análisis</b></label>
+<textarea id="analysisUrls">https://github.com/gorbea0/LIMS/blob/main/REPORTER%205oct.CSV
+https://github.com/gorbea0/LIMS/blob/main/REPORTER_ANALIS_20251219.CSV</textarea>
+</details>
+<section class="card"><h2>Filtros y límites</h2><div class="row"><label>Fecha toma desde <input id="dateFrom" type="date"></label><label>hasta <input id="dateTo" type="date"></label><button class="btn secondary" id="currentYearBtn" title="Desde el 1 de enero hasta hoy">Año en curso</button><button class="btn secondary" id="last365Btn" title="Últimos 365 días hasta hoy">Últimos 365 días</button><button class="btn" id="loadBtn">Cargar y analizar</button><button class="btn secondary" id="showBlankLimits">Ver límites blancos</button><button class="btn secondary" id="showDupLimits">Ver límites duplicados</button></div><div id="summary" class="summary muted">Sin datos cargados.</div></section>
+<section class="card"><div class="toolbar"><div class="leftTools tabs"><button class="btn tab active" data-tab="blancos">Blancos</button><button class="btn tab" data-tab="duplicados">Duplicados</button></div><div class="rightTools"><label><input id="onlyBad" type="checkbox"> Solo incumplimientos</label><span class="sepLeft"></span><label><input id="showEnvase" type="checkbox" checked> Blancos envase</label><label><input id="showLudicas" type="checkbox" checked> Lúdicas</label><label><input id="showPotables" type="checkbox" checked> Potables</label><label><input id="showLegio" type="checkbox" checked> Legio</label><label class="sepLeft">Parámetro <select id="paramFilter"><option value="">Todos</option></select></label><label>Gráfico <select id="chartMode"><option value="auto" selected>Todos + evolución temporal</option><option value="time">Evolución temporal</option><option value="bar">Barras</option></select></label><button class="btn secondary" id="downloadBtn" disabled>Descargar CSV actual</button><button class="btn secondary" id="downloadPdfBtn" disabled>Descargar PDF</button></div></div><div id="paramStats" class="stats muted">Sin filtro de parámetro.</div><div class="charts"><div><h2>Gráfico de blancos</h2><canvas id="chartBlanks" width="900" height="300"></canvas></div><div><h2>Gráfico de duplicados</h2><canvas id="chartDups" width="900" height="300"></canvas></div></div><div class="calendarWrap"><h2>Calendario · distribución temporal de muestras</h2><canvas id="chartCalendar" width="1800" height="240"></canvas></div><div id="table" class="tablewrap" style="margin-top:14px"></div></section>
+<section class="card"><h2>Log</h2><pre id="log"></pre></section></div><div id="limitsModal" class="modal"><div class="modalbox"><button class="btn secondary right" id="closeModal">Cerrar</button><h2 id="modalTitle">Límites</h2><div id="modalContent"></div></div></div>
+<script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.2/dist/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
+<script>
+
+const BLANK_LIMITS={
+  "Conductividad":15,
+  "Aluminio":50,
+  "Arsénico":1,
+  "Antimonio":1,
+  "Boro":50,
+  "Cadmio":1.5,
+  "Cobre":50,
+  "Cromo":10,
+  "Hierro":10,
+  "Manganeso":10,
+  "Níquel":5,
+  "Plomo":1,
+  "Selenio":1,
+  "Fluoruros":0.1,
+  "Cloruros":1,
+  "Nitritos":0.15,
+  "Nitratos":1,
+  "Sulfatos":1,
+  "Microorganismos 22ºC":10,
+  "Microorganismos cultivables a 36ºC":10,
+  "Microorganismos cultivables a 37ºC":10,
+  "Coliformes totales":0,
+  "Coliformes a 37ºC":0,
+  "Escherichia coli":0,
+  "Enterococos intestinales":0,
+  "Pseudomonas aeruginosa":0,
+  "Clostridium perfringens":0,
+  "Estafilococos coagulasa positivos":0,
+  "Legionella spp.":0
+};
+const DUP_LIMITS={
+  "Conductividad":11,
+  "Aluminio":23.9,
+  "Arsénico":22.3,
+  "Antimonio":21.8,
+  "Boro":23.2,
+  "Cadmio":21.3,
+  "Cobre":23.9,
+  "Cromo":20.2,
+  "Hierro":20.4,
+  "Manganeso":24.0,
+  "Níquel":23.6,
+  "Plomo":23.8,
+  "Selenio":20.2,
+  "Fluoruros":14.5,
+  "Cloruros":19.3,
+  "Nitritos":28.7,
+  "Nitratos":18.0,
+  "Sulfatos":11.1,
+  "Microorganismos 22ºC":2,
+  "Microorganismos cultivables a 36ºC":2,
+  "Microorganismos cultivables a 37ºC":2,
+  "Coliformes totales":2,
+  "Coliformes a 37ºC":2,
+  "Escherichia coli":2,
+  "Enterococos intestinales":2,
+  "Pseudomonas aeruginosa":2,
+  "Clostridium perfringens":2,
+  "Estafilococos coagulasa positivos":2,
+  "Legionella spp.":2
+};
+const LIMIT_UNITS={
+  "Conductividad":"µS/cm",
+  "Aluminio":"µg/L","Arsénico":"µg/L","Antimonio":"µg/L","Boro":"µg/L","Cadmio":"µg/L","Cobre":"µg/L","Cromo":"µg/L","Hierro":"µg/L","Manganeso":"µg/L","Níquel":"µg/L","Plomo":"µg/L","Selenio":"µg/L",
+  "Fluoruros":"mg/L","Cloruros":"mg/L","Nitritos":"mg/L","Nitratos":"mg/L","Sulfatos":"mg/L",
+  "Microorganismos 22ºC":"UFC","Microorganismos cultivables a 36ºC":"UFC","Microorganismos cultivables a 37ºC":"UFC","Coliformes totales":"UFC","Coliformes a 37ºC":"UFC","Escherichia coli":"UFC","Enterococos intestinales":"UFC","Pseudomonas aeruginosa":"UFC","Clostridium perfringens":"UFC","Estafilococos coagulasa positivos":"UFC","Legionella spp.":"UFC"
+};
+
+let sampleMap=new Map(), analysisById=new Map(), blanksRows=[], dupRows=[], activeTab='blancos', activeHeaders=[], currentFilteredRows=[];
+function log(m){const e=document.getElementById('log');e.textContent+='\n'+m;e.scrollTop=e.scrollHeight}function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function norm(s){return String(s??'').trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}function get(r,n){const nn=norm(n);for(const k in r)if(norm(k)===nn)return r[k];return''}function githubRaw(u){return u.trim().replace('https://github.com/','https://raw.githubusercontent.com/').replace('/blob/','/')}
+function detectDelimiter(t){const f=(t.split(/\r?\n/).find(l=>l.trim())||'');return [[','],[';'],['\t'],['|']].map(a=>[a[0],(f.match(new RegExp('\\'+a[0],'g'))||[]).length]).sort((a,b)=>b[1]-a[1])[0][0]||','}
+function parseCSV(t){t=t.replace(/^\uFEFF/,'');const d=detectDelimiter(t);const rows=[];let row=[],field='',q=false;for(let i=0;i<t.length;i++){const c=t[i],n=t[i+1];if(q){if(c==='"'&&n==='"'){field+='"';i++}else if(c==='"')q=false;else field+=c}else{if(c==='"')q=true;else if(c===d){row.push(field);field=''}else if(c==='\n'){row.push(field);rows.push(row);row=[];field=''}else if(c!=='\r')field+=c}}if(field.length||row.length){row.push(field);rows.push(row)}if(!rows.length)return[];const h=rows.shift().map(x=>x.trim());return rows.filter(r=>r.some(v=>String(v).trim()!=='')).map(r=>Object.fromEntries(h.map((x,i)=>[x,(r[i]??'').trim()]))) }
+function decode(buf){return new TextDecoder(document.getElementById('encoding').value).decode(buf)}async function readFile(f){return decode(await f.arrayBuffer())}async function fetchUrl(u){const raw=githubRaw(u);if(/^file:|^[a-z]:[\\/]/i.test(raw))throw new Error('Usa Elegir archivos para ficheros locales.');const r=await fetch(raw);if(!r.ok)throw new Error(r.status+' '+raw);return decode(await r.arrayBuffer())}
+async function loadMany(kind){const all=[];for(const u of document.getElementById(kind+'Urls').value.split(/\r?\n/).map(x=>x.trim()).filter(Boolean)){log('Descargando '+kind+': '+u);{ const parsed=parseCSV(await fetchUrl(u)); for (const row of parsed) all.push(row); }}for(const f of document.getElementById(kind+'Files').files){log('Leyendo '+kind+': '+f.name);{ const parsed=parseCSV(await readFile(f)); for (const row of parsed) all.push(row); }}log('Filas '+kind+' cargadas: '+all.length);return all}
+function parseDate(v){let s=String(v||'').trim(),m=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);if(m)return new Date(+m[3],+m[2]-1,+m[1]);let d=new Date(s);return isNaN(d)?null:d}function fmtDate(v){const d=parseDate(v);if(!d)return String(v||'').split(/\s+/)[0]||'';return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear()}function inDate(r){const d=parseDate(get(r,'Sampled date'));if(!d)return false;const f=document.getElementById('dateFrom').value,t=document.getElementById('dateTo').value;if(f&&d<new Date(f+'T00:00:00'))return false;if(t&&d>new Date(t+'T23:59:59'))return false;return true}
+function repair(s){return String(s??'').replace(/Ã¡/g,'á').replace(/Ã©/g,'é').replace(/Ãí/g,'í').replace(/Ã³/g,'ó').replace(/Ãº/g,'ú').replace(/Ã±/g,'ñ').replace(/Âº/g,'º').replace(/Âµ/g,'µ').replace(/\s+/g,' ').trim()}
+function canon(name){const o=repair(name);let n=norm(o).replace(/[º°]/g,'o').replace(/[()_.*,:;\/]+/g,' ').replace(/[-]+/g,' ').replace(/\s+/g,' ').trim();if(/\bfecha\b/.test(n)&&/(comienzo|inicio|fin|final|ensayo|legion|siembra|lectura|incubacion)/.test(n))return'';if(/(?:legionella|legionela)/.test(n)&&/(volumen filtrado|limite de deteccion|limite deteccion)/.test(n))return'';if(/envase|biocida|temperatura transporte/.test(n))return'';if(/conductividad/.test(n))return /campo/.test(n)?'Conductividad campo':'Conductividad';if(/^ph\b|\bph\b/.test(n))return /campo/.test(n)?'pH campo':'pH';if(/turbidez/.test(n))return'Turbidez';if(/temperatura/.test(n))return'Temperatura';const cloroAlias={
+  'cloro libre':'Cloro libre residual',
+  'cloro libre residual':'Cloro libre residual',
+  'cloro residual libre':'Cloro libre residual',
+  'cloro residual':'Cloro libre residual',
+  'cloro total':'Cloro total residual',
+  'cloro total residual':'Cloro total residual',
+  'cloro residual total':'Cloro total residual'
+};
+if(cloroAlias[n])return cloroAlias[n];
+if(/(^|\s)cloro(\s|$)/.test(n)){if(/\blibre\b/.test(n))return'Cloro libre residual';if(/\btotal\b/.test(n))return'Cloro total residual';if(/\bresidual\b/.test(n))return'Cloro libre residual';}if(/microorg|microorganismos|germenes|colonias|recuento.*22|rcto.*22/.test(n)){if(/22/.test(n))return'Microorganismos 22ºC';if(/36|37/.test(n))return'Microorganismos cultivables a 36ºC';return'Microorganismos cultivables'}if(/coliform/.test(n))return /37/.test(n)?'Coliformes a 37ºC':'Coliformes totales';if(/escherichia|e coli|ecoli/.test(n))return'Escherichia coli';if(/enterococ/.test(n))return'Enterococos intestinales';if(/pseudomona/.test(n))return'Pseudomonas aeruginosa';if(/clostridium|perfringens/.test(n))return'Clostridium perfringens';if(/coagulasa|estafiloc|staphyloc|stafiloc/.test(n))return'Estafilococos coagulasa positivos';if(/legionella|legionela/.test(n))return'Legionella spp.';if(/fluoruro|fluor/.test(n))return'Fluoruros';if(/cloruro/.test(n))return'Cloruros';if(/nitrato/.test(n))return'Nitratos';if(/nitrito/.test(n))return'Nitritos';if(/sulfato/.test(n))return'Sulfatos';if(/aluminio|al/.test(n))return'Aluminio';if(/arsenico|arsenic|as/.test(n))return'Arsénico';if(/antimonio|sb/.test(n))return'Antimonio';if(/boro|b/.test(n))return'Boro';if(/cadmio|cd/.test(n))return'Cadmio';if(/cobre|cu/.test(n))return'Cobre';if(/cromo|cr/.test(n))return'Cromo';if(/hierro|fe/.test(n))return'Hierro';if(/manganeso|mn/.test(n))return'Manganeso';if(/niquel|ni/.test(n))return'Níquel';if(/plomo|pb/.test(n))return'Plomo';if(/selenio|se/.test(n))return'Selenio';if(/amonio/.test(n))return'Amonio';return o.replace(/\*/g,'').replace(/\s+/g,' ').trim()}
+function num(v){let s=String(v??'').replace(',','.').match(/-?\d+(?:\.\d+)?/);return s?+s[0]:null}
+function isMicroParam(p){const n=norm(p);return /microorgan|colonias|coliform|escherichia|e coli|ecoli|enterococ|clostridium|perfringens|pseudomona|legionella|legionela|coagulasa|estafiloc|staphyloc|stafiloc/.test(n)}
+function resultVal(r){return repair(get(r,'Result value'))}function resultText(r){return repair(get(r,'Result text'))}
+function numericForResult(p, txt, val){
+  if(isMicroParam(p)){
+    const t=String(txt||'').trim();
+    const tn=norm(t);
+    if(t.startsWith('<'))return 0;
+    if(/^(ausencia|negativo|no detectado|no aislado|nd)$/.test(tn))return 0;
+    const nt=num(t); if(nt!==null)return Math.max(0,nt);
+  }
+  const nv=num(val);
+  return nv===null?null:Math.max(0,nv); // cualquier resultado numérico negativo se considera 0
+}
+function isCCI(r){return /^cci[-_]/i.test(String(get(r,'Job Name')||get(r,'Id Text')||''))||/\bcci[-_]/i.test(String(get(r,'Id Text')||''))}function isDup(r){return /duplicad/i.test(String(get(r,'Description')||''))}function dupOriginalId(r){const m=String(get(r,'Description')||'').match(/\d{3,}/);return m?m[0]:''}function isIgnoredControlParam(p){return /^(p1|p2|d)$/i.test(String(p||'').trim())}
+function jsonLimits(id){return id==='blankLimits'?BLANK_LIMITS:DUP_LIMITS}
+function buildAnalysis(rows){analysisById=new Map();for(const r of rows){const id=get(r,'Id numeric')||get(r,'Id Numeric');const p=canon(get(r,'Component name')||get(r,'Analysis'));if(!id||!p)continue;const val=resultVal(r), txt=resultText(r);if(val===''&&txt==='')continue;const entry={value:val,text:txt,num:numericForResult(p,txt,val)};if(!analysisById.has(id))analysisById.set(id,new Map());const m=analysisById.get(id);if(!m.has(p))m.set(p,[]);const key=entry.value+'||'+entry.text+'||'+entry.num;if(!m.get(p).some(e=>(e.value+'||'+e.text+'||'+e.num)===key))m.get(p).push(entry)}}
+function valFor(id,p){const arr=analysisById.get(String(id))?.get(p)||[];return arr.map(e=>isMicroParam(p)&&e.text?e.text:e.value).filter(Boolean).join(' | ')}
+function valUsed(id,p){const arr=analysisById.get(String(id))?.get(p)||[];return arr.map(e=>e.num).filter(x=>x!==null&&x!==undefined).join(' | ')}
+function valNum(id,p){const arr=analysisById.get(String(id))?.get(p)||[];for(const e of arr){if(e.num!==null&&e.num!==undefined)return e.num}return null}
+function negativeOriginal(id,p){const arr=analysisById.get(String(id))?.get(p)||[];for(const e of arr){const candidates=[];if(isMicroParam(p)&&String(e.text||'').trim()!=='')candidates.push(e.text);candidates.push(e.value);for(const raw of candidates){const n=num(raw);if(n!==null&&n<0)return repair(raw)}}return''}
+async function main(){document.getElementById('log').textContent='';blanksRows=[];dupRows=[];const samples=await loadMany('sample'), analyses=await loadMany('analysis');buildAnalysis(analyses);sampleMap=new Map();for(const s of samples){const id=get(s,'Id Numeric');if(id&&!sampleMap.has(id))sampleMap.set(id,s)}const limitsB=jsonLimits('blankLimits'), limitsD=jsonLimits('dupLimits');let selected=[...sampleMap.values()].filter(inDate);let cci=selected.filter(isCCI);let blanks=cci.filter(s=>!isDup(s));let dups=cci.filter(isDup);let dupErrors=[];let validDups=[];
+function sameSampleDate(a,b){const da=parseDate(get(a,'Sampled date')),db=parseDate(get(b,'Sampled date'));return !!(da&&db&&da.getFullYear()===db.getFullYear()&&da.getMonth()===db.getMonth()&&da.getDate()===db.getDate())}
+function findDupPartnerByDatePoint(d){const sp=norm(get(d,'Sampling point'));if(!sp)return {sample:null,reason:'el duplicado no tiene Sampling point'};const candidates=[...sampleMap.values()].filter(s=>!isDup(s)&&norm(get(s,'Sampling point'))===sp&&sameSampleDate(s,d));if(candidates.length===1)return {sample:candidates[0],method:'fecha + Sampling point'};if(candidates.length>1)return {sample:null,reason:'hay '+candidates.length+' posibles parejas con la misma fecha y Sampling point '+get(d,'Sampling point')};return {sample:null,reason:'no se encuentra ninguna muestra no duplicada con la misma fecha y Sampling point '+get(d,'Sampling point')}}
+for(const d of dups){const did=get(d,'Id Numeric');let oid=dupOriginalId(d), partner=oid?sampleMap.get(oid):null, method='ID en Description';if(partner&&isDup(partner))partner=null;if(!partner){const fb=findDupPartnerByDatePoint(d);if(fb.sample){partner=fb.sample;oid=get(partner,'Id Numeric');method=fb.method}else{dupErrors.push({did,oid,reason:(oid?'no se encuentra la pareja '+oid+' indicada en Description; ':'')+fb.reason,description:get(d,'Description'),samplingPoint:get(d,'Sampling point'),date:fmtDate(get(d,'Sampled date'))});continue}}validDups.push({sample:d,oid,method})}
+if(dupErrors.length){log('AVISO: '+dupErrors.length+' duplicado(s) ignorado(s) por no encontrarse una pareja inequívoca:');for(const e of dupErrors)log('  - Duplicado '+(e.did||'(sin ID)')+(e.oid?' → ID indicado '+e.oid:'')+': '+e.reason+'. Fecha: '+(e.date||'(sin fecha)')+'. Sampling point: '+(e.samplingPoint||'(vacío)')+'. Description: '+(e.description||'(vacía)'))}
+for(const x of validDups)if(x.method!=='ID en Description')log('Pareja localizada por '+x.method+': duplicado '+get(x.sample,'Id Numeric')+' → muestra '+x.oid+' ('+fmtDate(get(x.sample,'Sampled date'))+', '+get(x.sample,'Sampling point')+')');let allParams=new Set();for(const id of sampleMap.keys())for(const p of (analysisById.get(id)?.keys()||[]))allParams.add(p);for(const s of blanks){const id=get(s,'Id Numeric');for(const p of allParams){if(isIgnoredControlParam(p))continue;const v=valFor(id,p);if(!v)continue;const x=valNum(id,p), max=limitsB[p];blanksRows.push({'ID LIMS':id,'Fecha':fmtDate(get(s,'Sampled date')),'Test schedule':get(s,'Test schedule'),'Description':get(s,'Description'),'Sample name':get(s,'Sample name'),'Sampling point':get(s,'Sampling point'),'Parámetro':p,'Resultado':x??'', 'Límite':max??'', 'Resultado original':v,'_negOriginal':negativeOriginal(id,p), '_valor':x, 'Estado':(max!==undefined&&x!==null&&x>Number(max))?'SUPERA':'OK'})}}
+for(const pair of validDups){const d=pair.sample,did=get(d,'Id Numeric'),oid=pair.oid,orig=sampleMap.get(oid);const params=new Set([...(analysisById.get(did)?.keys()||[]),...(analysisById.get(oid)?.keys()||[])]);for(const p of params){if(isIgnoredControlParam(p))continue;const dv=valNum(did,p), ov=valNum(oid,p);if(dv===null&&ov===null)continue;const diff=(dv!==null&&ov!==null)?dv-ov:null;let rpd=null;if(diff!==null){const denom=Math.abs((dv+ov)/2);rpd=denom===0?(Math.abs(diff)===0?0:null):Math.abs(diff)/denom*100}const max=limitsD[p];dupRows.push({'ID muestra':oid,'ID duplicado':did,'Fecha':fmtDate(get(d,'Sampled date')),'Test schedule':get(d,'Test schedule'),'Description':get(d,'Description'),'Sample name':get(d,'Sample name'),'Sampling point':get(d,'Sampling point'),'Parámetro':p,'Muestra':ov??'','Duplicado':dv??'','Original muestra':valFor(oid,p),'Original duplicado':valFor(did,p),'_negOriginalMuestra':negativeOriginal(oid,p),'_negOriginalDuplicado':negativeOriginal(did,p),'Diferencia':diff===null?'':round(Math.abs(diff)),'RPD %':rpd===null?'':round1(rpd),'Límite RPD %':max??'','_valor':rpd,'Estado':(max!==undefined&&rpd!==null&&rpd>Number(max))?'SUPERA':'OK'})}}
+document.getElementById('summary').innerHTML=`<b>Muestras en rango:</b> ${selected.length} · <b>CCI:</b> ${cci.length} · <b>Blancos:</b> ${blanks.length} · <b>Duplicados válidos:</b> ${validDups.length} · <b>Duplicados ignorados:</b> ${dupErrors.length} · <b>Rango:</b> ${rangeText(selected)}${dupErrors.length?' · <b style="color:#b42318">⚠ '+dupErrors.length+' duplicado(s) sin pareja; ver Log</b>':''}`;document.getElementById('downloadBtn').disabled=false;document.getElementById('downloadPdfBtn').disabled=false;updateParamFilter();render();log('Análisis terminado.')}function round(x){return Math.round(x*1000)/1000}function round1(x){return Math.round(x*10)/10}function rangeText(rows){const ds=rows.map(r=>parseDate(get(r,'Sampled date'))).filter(Boolean).sort((a,b)=>a-b);return ds.length?fmtDate(ds[0])+' - '+fmtDate(ds.at(-1)):'sin fechas'}
+function baseRows(){return activeTab==='blancos'?blanksRows:dupRows}
+function updateParamFilter(){const sel=document.getElementById('paramFilter');const current=sel.value;const params=[...new Set(baseRows().map(r=>r.Parámetro).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));sel.innerHTML='<option value="">Todos</option>'+params.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join('');if(params.includes(current))sel.value=current;else sel.value=''}
+function rowCategories(r){
+  const desc=norm(r['Description']||'');
+  const tsRaw=String(r['Test schedule']||'').trim();
+  const ts=norm(tsRaw).toUpperCase().replace(/\s+/g,'');
+  const spNorm=norm(r['Sampling point']||'').toUpperCase().replace(/[\s_-]+/g,'');
+
+  // Blanco de envase: solo por Description o por Sampling point exacto POT/LEGIO/LUD-000.
+  const envase=/\benvase\b/.test(desc) || ['POT000','LEGIO000','LUD000'].includes(spNorm);
+
+  // Si Description identifica claramente potable/consumo/pueblo, tiene prioridad.
+  const descPot=/\b(potable|potables|pueblo|pueblos|consumo)\b/.test(desc);
+  const descLud=/\b(ludica|ludicas|piscina|piscinas)\b/.test(desc);
+  const descLeg=/\b(legio|legionela|legionella)\b/.test(desc);
+
+  const tsPot=/^(POT|P-MET|PMET|AGUAS[_ -]?POT|AGUASPOT)/.test(ts);
+  const tsLeg=/^(LEG|LEGIO|LEGIONELLA)/.test(ts);
+  const tsLud=/^(LUD|LUDICA|LUDICAS)/.test(ts);
+
+  let potables=false,ludicas=false,legio=false;
+  if(descPot){potables=true;}
+  else if(tsPot){potables=true;}
+  else if(tsLeg || descLeg){legio=true;}
+  else if(tsLud || descLud){ludicas=true;}
+
+  return {envase,ludicas,legio,potables,unknown:!(potables||ludicas||legio)};
+}
+function filteredRows(){let rows=baseRows();const onlyBad=document.getElementById('onlyBad').checked;const p=document.getElementById('paramFilter').value;const showEnvase=document.getElementById('showEnvase')?.checked??true;const showLudicas=document.getElementById('showLudicas')?.checked??true;const showPotables=document.getElementById('showPotables')?.checked??true;const showLegio=document.getElementById('showLegio')?.checked??true;rows=rows.filter(r=>{const c=rowCategories(r);if(c.envase&&showEnvase)return true;if(c.envase&&!showEnvase)return false;if(c.potables)return showPotables;if(c.legio)return showLegio;if(c.ludicas)return showLudicas;return showLudicas&&showPotables&&showLegio});if(onlyBad)rows=rows.filter(r=>r.Estado==='SUPERA');if(p)rows=rows.filter(r=>r.Parámetro===p);return rows}
+function statsOf(vals){const xs=vals.filter(x=>x!==null&&!isNaN(x)).sort((a,b)=>a-b);if(!xs.length)return null;const sum=xs.reduce((a,b)=>a+b,0), mean=sum/xs.length, med=xs.length%2?xs[(xs.length-1)/2]:(xs[xs.length/2-1]+xs[xs.length/2])/2;const sd=xs.length>1?Math.sqrt(xs.reduce((a,b)=>a+(b-mean)*(b-mean),0)/(xs.length-1)):0;return {n:xs.length,min:xs[0],max:xs.at(-1),mean,med,sd,cv:mean!==0?sd/Math.abs(mean)*100:null}}
+function parseDMY(s){const m=String(s||'').match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);return m?new Date(+m[3],+m[2]-1,+m[1]).getTime():null}
+function trendOf(rows){const pts=rows.map(r=>({t:parseDMY(r.Fecha),v:num(r._valor)})).filter(p=>p.t!==null&&p.v!==null).sort((a,b)=>a.t-b.t);if(pts.length<2)return null;const day=86400000;const x0=pts[0].t;const xs=pts.map(p=>(p.t-x0)/day), ys=pts.map(p=>p.v);const mx=xs.reduce((a,b)=>a+b,0)/xs.length, my=ys.reduce((a,b)=>a+b,0)/ys.length;let nume=0, den=0, sst=0, ssr=0;for(let i=0;i<xs.length;i++){nume+=(xs[i]-mx)*(ys[i]-my);den+=(xs[i]-mx)*(xs[i]-mx);sst+=(ys[i]-my)*(ys[i]-my)}const slopeDay=den?nume/den:0;const intercept=my-slopeDay*mx;for(let i=0;i<xs.length;i++){const pred=intercept+slopeDay*xs[i];ssr+=(ys[i]-pred)*(ys[i]-pred)}const r2=sst?Math.max(0,1-ssr/sst):0;return {slopeMonth:slopeDay*30.4375,r2}}
+function updateStats(rows){const p=document.getElementById('paramFilter').value;const el=document.getElementById('paramStats');if(!p){el.textContent='Sin filtro de parámetro.';return}const vals=rows.map(r=>num(r._valor)).filter(x=>x!==null);const st=statsOf(vals);if(!st){el.innerHTML='<b>'+esc(p)+'</b>: sin valores numéricos.';return}const unit=activeTab==='blancos'?(LIMIT_UNITS[p]||''):'%';const label=activeTab==='blancos'?'valor':'RPD';const u=unit?' '+unit:'';const tr=trendOf(rows);let extra='';if(tr) extra=` · tendencia=${round(tr.slopeMonth)}${esc(u)}/mes · R²=${round(tr.r2)}`;el.innerHTML=`<b>${esc(p)}</b> · ${esc(label)} · n=${st.n} · mín=${round(st.min)}${esc(u)} · máx=${round(st.max)}${esc(u)} · media=${round(st.mean)}${esc(u)} · mediana=${round(st.med)}${esc(u)} · desv.est=${round(st.sd)}${esc(u)}${st.cv!==null?' · CV='+round(st.cv)+'%':''}${extra}`}
+function cell(r,h){let title='';if(h==='Description'&&r['Sample name'])title=' title="Sample name: '+esc(r['Sample name'])+'"';if(h==='Resultado'&&r['Resultado original']){const neg=r['_negOriginal'];title=' title="'+(neg?'Valor original negativo: '+esc(neg)+' · valor usado: 0':'Result text/value original: '+esc(r['Resultado original']))+'"'}if(h==='Duplicado'&&r['Original duplicado']){const neg=r['_negOriginalDuplicado'];title=' title="'+(neg?'Valor original negativo: '+esc(neg)+' · valor usado: 0':'Result text/value original: '+esc(r['Original duplicado']))+'"'}if(h==='Muestra'&&r['Original muestra']){const neg=r['_negOriginalMuestra'];title=' title="'+(neg?'Valor original negativo: '+esc(neg)+' · valor usado: 0':'Result text/value original: '+esc(r['Original muestra']))+'"'}const bad=r.Estado==='SUPERA'&&(h==='Estado'||h==='Resultado'||h==='Límite'||h==='RPD %'||h==='Límite RPD %');return `<td${title} class="${bad?'bad':''}">${esc(r[h])}</td>`}
+function render(){const rows=filteredRows();currentFilteredRows=rows;const headers=activeTab==='blancos'?['ID LIMS','Fecha','Test schedule','Description','Parámetro','Resultado','Límite','Estado']:['ID muestra','ID duplicado','Fecha','Test schedule','Description','Parámetro','Muestra','Duplicado','Diferencia','RPD %','Límite RPD %','Estado'];activeHeaders=headers;updateStats(rows);document.getElementById('table').innerHTML='<table><thead><tr>'+headers.map(h=>'<th>'+esc(h)+'</th>').join('')+'</tr></thead><tbody>'+rows.map(r=>'<tr>'+headers.map(h=>cell(r,h)).join('')+'</tr>').join('')+'</tbody></table>';drawCharts();drawCalendarDistribution(rows)}
+const chartHits={};
+function setChartHits(canvasId,hits){chartHits[canvasId]=hits||[]}
+function ensureChartTooltip(){let t=document.getElementById('chartTooltip');if(!t){t=document.createElement('div');t.id='chartTooltip';t.className='chartTooltip';document.body.appendChild(t)}return t}
+function installChartTooltip(canvasId){const c=document.getElementById(canvasId);if(!c||c.dataset.tooltipReady)return;c.dataset.tooltipReady='1';c.addEventListener('mousemove',e=>{const rect=c.getBoundingClientRect(),x=(e.clientX-rect.left)*c.width/rect.width,y=(e.clientY-rect.top)*c.height/rect.height;let hit=null;for(const h of (chartHits[canvasId]||[])){if(h.type==='rect'&&x>=h.x&&x<=h.x+h.w&&y>=h.y&&y<=h.y+h.h){hit=h;break}if(h.type==='point'&&Math.hypot(x-h.x,y-h.y)<=Math.max(8,h.r||4)){hit=h;break}if(h.type==='arc'){let a=Math.atan2(y-h.cy,x-h.cx);if(a<0)a+=Math.PI*2;const rr=Math.hypot(x-h.cx,y-h.cy);let a0=h.a0%(Math.PI*2),a1=h.a1%(Math.PI*2);if(a0<0)a0+=Math.PI*2;if(a1<0)a1+=Math.PI*2;const insideA=a0<=a1?(a>=a0&&a<=a1):(a>=a0||a<=a1);if(rr>=h.r0&&rr<=h.r1&&insideA){hit=h;break}}}const t=ensureChartTooltip();if(hit){t.innerHTML=hit.html;t.style.display='block';t.style.left=(e.clientX+12)+'px';t.style.top=(e.clientY+12)+'px'}else t.style.display='none'});c.addEventListener('mouseleave',()=>{const t=ensureChartTooltip();t.style.display='none'})}
+function drawBar(canvasId, labels, vals, title, limit=null, unit='', tooltipLabels=null){const c=document.getElementById(canvasId),ctx=c.getContext('2d'),w=c.width,h=c.height,hits=[];installChartTooltip(canvasId);ctx.clearRect(0,0,w,h);ctx.font='13px sans-serif';ctx.fillStyle='#17202a';ctx.fillText(title,14,20);if(!vals.length){ctx.fillText('Sin datos numéricos',14,50);setChartHits(canvasId,[]);return}const limitNum=num(limit);const max=Math.max(...vals,limitNum??0,1), left=190, right=50, barH=Math.max(12,Math.min(28,(h-55)/Math.min(vals.length,12)-4));if(limitNum!==null){const x=left+(w-left-right)*(limitNum/max);ctx.save();ctx.strokeStyle='#d1242f';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,35);ctx.lineTo(x,h-10);ctx.stroke();ctx.fillStyle='#d1242f';ctx.fillText('Límite '+limitNum+(unit?' '+unit:''),x+4,38);ctx.restore()}labels.slice(0,12).forEach((lab,i)=>{const y=48+i*(barH+4),v=vals[i],bw=(w-left-right)*(v/max);ctx.fillStyle='#1f6feb';ctx.fillRect(left,y,bw,barH);ctx.fillStyle='#17202a';ctx.fillText(String(lab).slice(0,27),10,y+barH-3);ctx.fillText(String(v)+(unit?' '+unit:''),left+bw+5,y+barH-3);hits.push({type:'rect',x:left,y,w:Math.max(bw,5),h:barH,html:`<b>${esc(tooltipLabels?.[i]??lab)}</b><br>${esc(v)}${unit?' '+esc(unit):''}`})});setChartHits(canvasId,hits)}
+function drawTime(canvasId, rows, title, limit=null, unit=''){const c=document.getElementById(canvasId),ctx=c.getContext('2d'),w=c.width,h=c.height,hits=[];installChartTooltip(canvasId);ctx.clearRect(0,0,w,h);ctx.font='13px sans-serif';ctx.fillStyle='#17202a';ctx.fillText(title+(unit?' ('+unit+')':''),14,20);const pts=rows.map(r=>({t:parseDMY(r.Fecha),v:num(r._valor),lab:r.Fecha,id:r['ID LIMS']||r['ID duplicado']||''})).filter(p=>p.t!==null&&p.v!==null).sort((a,b)=>a.t-b.t);if(!pts.length){ctx.fillText('Sin datos numéricos',14,50);setChartHits(canvasId,[]);return}const L=65,R=22,T=38,B=34;const minT=pts[0].t,maxT=pts.at(-1).t;const lim=num(limit);let maxV=Math.max(...pts.map(p=>p.v),lim??0,1),minV=Math.min(0,...pts.map(p=>p.v));if(minV===maxV){maxV+=1;minV-=1}function x(t){return L+(w-L-R)*((maxT===minT)?0.5:(t-minT)/(maxT-minT))}function y(v){return h-B-(h-T-B)*((v-minV)/(maxV-minV))}ctx.strokeStyle='#ccd6e3';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(L,T);ctx.lineTo(L,h-B);ctx.lineTo(w-R,h-B);ctx.stroke();ctx.fillStyle='#667085';ctx.fillText(round(maxV)+(unit?' '+unit:''),8,T+5);ctx.fillText(round(minV)+(unit?' '+unit:''),8,h-B);if(lim!==null){const yy=y(lim);ctx.save();ctx.strokeStyle='#d1242f';ctx.lineWidth=2;ctx.setLineDash([6,4]);ctx.beginPath();ctx.moveTo(L,yy);ctx.lineTo(w-R,yy);ctx.stroke();ctx.setLineDash([]);ctx.fillStyle='#d1242f';ctx.fillText('Límite '+lim+(unit?' '+unit:''),w-R-145,yy-5);ctx.restore()}ctx.strokeStyle='#1f6feb';ctx.lineWidth=2;ctx.beginPath();pts.forEach((p,i)=>{const xx=x(p.t),yy=y(p.v);if(i)ctx.lineTo(xx,yy);else ctx.moveTo(xx,yy)});ctx.stroke();ctx.fillStyle='#1f6feb';pts.forEach(p=>{const xx=x(p.t),yy=y(p.v);ctx.beginPath();ctx.arc(xx,yy,3,0,Math.PI*2);ctx.fill();hits.push({type:'point',x:xx,y:yy,r:5,html:`<b>${esc(p.lab)}</b>${p.id?'<br>ID: '+esc(p.id):''}<br>Valor: ${esc(p.v)}${unit?' '+esc(unit):''}`})});if(pts.length>1){const day=86400000,x0=pts[0].t;const xs=pts.map(p=>(p.t-x0)/day),ys=pts.map(p=>p.v),mx=xs.reduce((a,b)=>a+b,0)/xs.length,my=ys.reduce((a,b)=>a+b,0)/ys.length;let nume=0,den=0;for(let i=0;i<xs.length;i++){nume+=(xs[i]-mx)*(ys[i]-my);den+=(xs[i]-mx)*(xs[i]-mx)}const m=den?nume/den:0,b=my-m*mx;ctx.save();ctx.strokeStyle='#111827';ctx.lineWidth=1.5;ctx.setLineDash([3,3]);ctx.beginPath();ctx.moveTo(x(pts[0].t),y(b+m*xs[0]));ctx.lineTo(x(pts.at(-1).t),y(b+m*xs.at(-1)));ctx.stroke();ctx.restore()}ctx.fillStyle='#667085';ctx.fillText(pts[0].lab,L,h-8);ctx.textAlign='right';ctx.fillText(pts.at(-1).lab,w-R,h-8);ctx.textAlign='left';setChartHits(canvasId,hits)}
+function rowsForChart(kind){const old=activeTab;activeTab=kind;const r=filteredRows();activeTab=old;return r}
+function rowsForSummary(kind){const rows=kind==='blancos'?blanksRows:dupRows;const showEnvase=document.getElementById('showEnvase')?.checked??true,showLudicas=document.getElementById('showLudicas')?.checked??true,showPotables=document.getElementById('showPotables')?.checked??true,showLegio=document.getElementById('showLegio')?.checked??true;return rows.filter(r=>{const c=rowCategories(r);if(c.envase)return showEnvase;if(c.potables)return showPotables;if(c.legio)return showLegio;if(c.ludicas)return showLudicas;return showLudicas&&showPotables&&showLegio})}
+function categoryName(r){const c=rowCategories(r);if(c.envase)return'Envase';if(c.potables)return'Potables';if(c.ludicas)return'Lúdicas';if(c.legio)return'Legio';return'Otros'}
+function sampleSummary(kind){const rows=rowsForSummary(kind),idKey=kind==='blancos'?'ID LIMS':'ID duplicado',m=new Map();for(const r of rows){const id=String(r[idKey]??'');if(!id)continue;if(!m.has(id))m.set(id,{id,cat:categoryName(r),bad:false});if(r.Estado==='SUPERA')m.get(id).bad=true}const out={};for(const x of m.values()){if(!out[x.cat])out[x.cat]={total:0,bad:0};out[x.cat].total++;if(x.bad)out[x.cat].bad++}return out}
+function drawPieSummary(canvasId,kind){const c=document.getElementById(canvasId),ctx=c.getContext('2d'),w=c.width,h=c.height,hits=[];installChartTooltip(canvasId);ctx.clearRect(0,0,w,h);const data=sampleSummary(kind),cats=Object.keys(data),total=cats.reduce((a,k)=>a+data[k].total,0);ctx.font='13px sans-serif';ctx.fillStyle='#17202a';ctx.fillText((kind==='blancos'?'Blancos':'Duplicados')+' por tipo · total '+total,14,20);if(!total){ctx.fillText('Sin datos',14,50);setChartHits(canvasId,[]);return}const palette=['#1f6feb','#7c3aed','#0891b2','#d97706','#64748b','#16a34a','#dc2626','#db2777','#0f766e','#9333ea'];const slices=[];for(const cat of cats){const d=data[cat];if(d.total-d.bad>0)slices.push({label:cat+' · OK',cat,status:'OK',n:d.total-d.bad,total:d.total,bad:d.bad});if(d.bad>0)slices.push({label:cat+' · incumple',cat,status:'SUPERA',n:d.bad,total:d.total,bad:d.bad})}const cx=205,cy=165,r=105,r0=48;let a=-Math.PI/2;for(let i=0;i<slices.length;i++){const sl=slices[i],a1=a+Math.PI*2*(sl.n/total);ctx.beginPath();ctx.moveTo(cx,cy);ctx.arc(cx,cy,r,a,a1);ctx.closePath();ctx.fillStyle=palette[i%palette.length];ctx.fill();hits.push({type:'arc',cx,cy,r0:0,r1:r,a0:(a+Math.PI*2)%(Math.PI*2),a1:(a1+Math.PI*2)%(Math.PI*2),html:`<b>${esc(sl.cat)}</b><br>${sl.status==='SUPERA'?'Incumplimientos':'Cumplen'}: ${sl.n}<br>Total tipo: ${sl.total}<br>Incumplimiento tipo: ${round(sl.bad/sl.total*100)}%`});a=a1}ctx.beginPath();ctx.arc(cx,cy,r0,0,Math.PI*2);ctx.fillStyle='#fff';ctx.fill();ctx.fillStyle='#17202a';ctx.font='bold 18px sans-serif';ctx.textAlign='center';ctx.fillText(String(total),cx,cy+4);ctx.font='12px sans-serif';ctx.fillText(kind==='blancos'?'blancos':'duplicados',cx,cy+22);ctx.textAlign='left';ctx.font='12px sans-serif';let y=54;for(const cat of cats){const d=data[cat],pct=d.total?round(d.bad/d.total*100):0;ctx.fillStyle='#17202a';ctx.fillText(`${cat}: ${d.total} · incumple ${d.bad} (${pct}%)`,355,y);y+=27}
+
+// Histograma de incumplimientos por tipo, aprovechando el espacio derecho del mismo recuadro.
+const hx=650, hw=Math.max(90,w-hx-28), hTop=58, rowH=42;
+const maxBad=Math.max(1,...cats.map(cat=>data[cat].bad));
+ctx.font='bold 12px sans-serif';ctx.fillStyle='#17202a';ctx.fillText('Incumplimientos por tipo',hx,hTop-18);
+ctx.font='11px sans-serif';
+cats.forEach((cat,i)=>{
+  const d=data[cat], yy=hTop+i*rowH, bw=(hw-58)*(d.bad/maxBad);
+  ctx.fillStyle='#667085';ctx.fillText(cat.slice(0,12),hx,yy+11);
+  ctx.fillStyle='#d1242f';ctx.fillRect(hx,yy+16,bw,13);
+  ctx.fillStyle='#17202a';ctx.fillText(String(d.bad),hx+bw+5,yy+27);
+  hits.push({type:'rect',x:hx,y:yy+12,w:Math.max(bw,18),h:22,html:`<b>${esc(cat)}</b><br>Incumplimientos: ${d.bad}<br>Total: ${d.total}<br>Proporción: ${d.total?round(d.bad/d.total*100):0}%`});
+});
+setChartHits(canvasId,hits)}
+function drawCharts(){const p=document.getElementById('paramFilter').value;const mode=document.getElementById('chartMode')?.value||'auto';if(!p&&mode==='auto'){drawPieSummary('chartBlanks','blancos');drawPieSummary('chartDups','duplicados');return}if(p){const rb=rowsForChart('blancos').filter(r=>num(r._valor)!==null);const rd=rowsForChart('duplicados').filter(r=>num(r['RPD %'])!==null);const bu=LIMIT_UNITS[p]||'';if(mode==='bar'){drawBar('chartBlanks',rb.slice(0,25).map(r=>String(r['ID LIMS'])+' '+String(r.Fecha||'')),rb.slice(0,25).map(r=>num(r._valor)),p+' · valores en blancos'+(bu?' · '+bu:''),BLANK_LIMITS[p],bu);drawBar('chartDups',rd.slice(0,25).map(r=>String(r['ID muestra'])+'/'+String(r['ID duplicado'])),rd.slice(0,25).map(r=>num(r['RPD %'])),p+' · RPD en duplicados',DUP_LIMITS[p],'%');}else{drawTime('chartBlanks',rb,p+' · evolución en blancos',BLANK_LIMITS[p],bu);drawTime('chartDups',rd,p+' · evolución RPD en duplicados',DUP_LIMITS[p],'%')}return}const badB=new Map();for(const r of rowsForChart('blancos'))if(r.Estado==='SUPERA')badB.set(r.Parámetro,(badB.get(r.Parámetro)||0)+1);drawBar('chartBlanks',[...badB.keys()],[...badB.values()],'Blancos que superan límite por parámetro',null,'');const avg=new Map(),cnt=new Map();for(const r of rowsForChart('duplicados')){const e=num(r['RPD %']);if(e!==null){avg.set(r.Parámetro,(avg.get(r.Parámetro)||0)+e);cnt.set(r.Parámetro,(cnt.get(r.Parámetro)||0)+1)}}const labels=[...avg.keys()].sort((a,b)=>(avg.get(b)/cnt.get(b))-(avg.get(a)/cnt.get(a))).slice(0,12);drawBar('chartDups',labels,labels.map(k=>Math.round((avg.get(k)/cnt.get(k))*10)/10),'RPD medio en duplicados',null,'%')}
+
+function drawCalendarDistribution(rows){
+  const c=document.getElementById('chartCalendar'); if(!c)return;
+  installChartTooltip('chartCalendar');
+  const idKey=activeTab==='blancos'?'ID LIMS':'ID duplicado';
+  const days=new Map(), seen=new Set();
+  for(const r of rows){
+    const id=String(r[idKey]??''), date=String(r.Fecha||''); if(!id||!date)continue;
+    const key=id+'|'+date; if(seen.has(key))continue; seen.add(key);
+    if(!days.has(date))days.set(date,{n:0,bad:0,ids:[]});
+    const d=days.get(date); d.n++; d.ids.push(id);
+  }
+  // A sample/day is non-compliant if any currently filtered row for that sample/date is non-compliant.
+  const badSeen=new Set();
+  for(const r of rows){const id=String(r[idKey]??''),date=String(r.Fecha||'');if(!id||!date||r.Estado!=='SUPERA')continue;const key=id+'|'+date;if(badSeen.has(key))continue;badSeen.add(key);if(days.has(date))days.get(date).bad++;}
+  const parsed=[...days.keys()].map(s=>({s,t:parseDMY(s),d:new Date(parseDMY(s))})).filter(x=>x.t!==null).sort((a,b)=>a.t-b.t);
+  const ctx=c.getContext('2d');
+  if(!parsed.length){c.height=190;ctx.clearRect(0,0,c.width,c.height);ctx.font='14px sans-serif';ctx.fillStyle='#667085';ctx.fillText('Sin muestras en el filtro actual.',18,38);setChartHits('chartCalendar',[]);return}
+  const years=[...new Set(parsed.map(x=>x.d.getFullYear()))];
+  const rowH=88, top=42, left=92, right=20, cell=14, gap=2;
+  c.height=Math.max(190,top+years.length*rowH+28);
+  const w=c.width,h=c.height;ctx.clearRect(0,0,w,h);ctx.font='13px sans-serif';ctx.fillStyle='#17202a';
+  const total=[...days.values()].reduce((a,d)=>a+d.n,0),bad=[...days.values()].reduce((a,d)=>a+d.bad,0);
+  ctx.fillText(`${activeTab==='blancos'?'Blancos':'Duplicados'} · ${total} muestras/duplicados en ${days.size} días · incumplen ${bad}`,16,22);
+  const maxN=Math.max(1,...[...days.values()].map(d=>d.n)), hits=[];
+  const weekW=Math.min(cell+gap,(w-left-right)/54);
+  const names=['L','M','X','J','V','S','D'];
+  years.forEach((yr,yi)=>{
+    const y0=top+yi*rowH;ctx.fillStyle='#17202a';ctx.font='bold 13px sans-serif';ctx.fillText(String(yr),16,y0+15);ctx.font='10px sans-serif';ctx.fillStyle='#667085';
+    names.forEach((n,i)=>ctx.fillText(n,left-18,y0+10+i*(cell+gap)));
+    const jan1=new Date(yr,0,1), jan1Mon=(jan1.getDay()+6)%7;
+    const firstMonday=new Date(yr,0,1-jan1Mon);
+    for(let m=0;m<12;m++){const md=new Date(yr,m,1);const wk=Math.floor((md-firstMonday)/(7*86400000));ctx.fillStyle='#667085';ctx.fillText(['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'][m],left+wk*weekW,y0-5)}
+    for(let d=new Date(yr,0,1);d.getFullYear()===yr;d.setDate(d.getDate()+1)){
+      const dow=(d.getDay()+6)%7, wk=Math.floor((d-firstMonday)/(7*86400000));
+      const x=left+wk*weekW,y=y0+dow*(cell+gap), ds=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+yr, info=days.get(ds);
+      ctx.fillStyle='#f1f5f9';ctx.fillRect(x,y,Math.max(8,cell),cell);
+      if(info){const a=0.18+0.72*(info.n/maxN);ctx.fillStyle=`rgba(31,111,235,${a})`;ctx.fillRect(x,y,Math.max(8,cell),cell);if(info.bad){ctx.strokeStyle='#d1242f';ctx.lineWidth=2;ctx.strokeRect(x+.5,y+.5,Math.max(8,cell)-1,cell-1)}hits.push({type:'rect',x,y,w:Math.max(8,cell),h:cell,html:`<b>${ds}</b><br>${activeTab==='blancos'?'Blancos':'Duplicados'}: ${info.n}<br>Incumplen: ${info.bad}`})}
+    }
+  });
+  ctx.font='11px sans-serif';ctx.fillStyle='#667085';ctx.fillText('Más intensidad = más muestras ese día · borde rojo = al menos un incumplimiento',16,h-10);
+  setChartHits('chartCalendar',hits);
+}
+
+function showLimits(kind){
+  const obj = kind==='blank' ? BLANK_LIMITS : DUP_LIMITS;
+  const title = kind==='blank' ? 'Límites de blancos' : 'Límites de duplicados (RPD %)';
+  document.getElementById('modalTitle').textContent = title;
+  let html = '<table><thead><tr><th>Parámetro</th><th>Límite</th><th>Unidad</th></tr></thead><tbody>';
+  for(const k of Object.keys(obj).sort((a,b)=>a.localeCompare(b,'es'))){
+    const unit = kind==='blank' ? (LIMIT_UNITS[k]||'') : '%';
+    html += `<tr><td>${esc(k)}</td><td>${esc(obj[k])}</td><td>${esc(unit)}</td></tr>`;
+  }
+  html += '</tbody></table>';
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('limitsModal').classList.add('open');
+}
+function csvEscape(v){
+  const s=String(v??'');
+  return /[",;\n\r]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+}
+function download(){
+  const rows=currentFilteredRows||[];
+  const headers=activeHeaders||[];
+  if(!rows.length || !headers.length){ alert('No hay datos para descargar.'); return; }
+  const sep=';';
+  const csv='\uFEFF'+headers.join(sep)+'\n'+rows.map(r=>headers.map(h=>csvEscape(r[h])).join(sep)).join('\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=(activeTab==='blancos'?'blancos':'duplicados')+'_lims.csv';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500);
+}
+
+async function downloadPDF(){
+  const rows=currentFilteredRows||[],headers=activeHeaders||[];
+  if(!rows.length||!headers.length){alert('No hay datos filtrados para generar el PDF.');return}
+  if(!window.jspdf?.jsPDF){alert('No se ha podido cargar la librería PDF. Comprueba la conexión a Internet.');return}
+  const {jsPDF}=window.jspdf;
+  const doc=new jsPDF({orientation:'landscape',unit:'mm',format:'a4'}), pageW=doc.internal.pageSize.getWidth(), margin=10;
+  doc.setFontSize(15);doc.text('LIMS - Blancos y duplicados CCI',margin,11);
+  doc.setFontSize(9);
+  const tab=activeTab==='blancos'?'Blancos':'Duplicados',p=document.getElementById('paramFilter').value||'Todos';
+  const d1=document.getElementById('dateFrom').value||'-',d2=document.getElementById('dateTo').value||'-';
+  const cats=[];if(document.getElementById('showEnvase').checked)cats.push('Envase');if(document.getElementById('showLudicas').checked)cats.push('Lúdicas');if(document.getElementById('showPotables').checked)cats.push('Potables');if(document.getElementById('showLegio').checked)cats.push('Legio');
+  const bad=document.getElementById('onlyBad').checked?'Solo incumplimientos':'Todos los estados';
+  doc.text(`${tab} | Fecha: ${d1} a ${d2} | Parámetro: ${p} | ${bad} | Tipos: ${cats.join(', ')||'ninguno'}`,margin,17);
+  doc.text(`Filas mostradas: ${rows.length}`,margin,22);
+  let y=27;
+  try{
+    const c1=document.getElementById('chartBlanks'),c2=document.getElementById('chartDups');
+    doc.addImage(c1.toDataURL('image/png'),'PNG',margin,y,132,44);
+    doc.addImage(c2.toDataURL('image/png'),'PNG',pageW-margin-132,y,132,44);
+    y+=49;
+    const cal=document.getElementById('chartCalendar'),ratio=cal.height/cal.width,calW=pageW-2*margin,calH=Math.min(62,calW*ratio);
+    doc.addImage(cal.toDataURL('image/png'),'PNG',margin,y,calW,calH);y+=calH+5;
+  }catch(e){console.warn('No se pudieron añadir gráficos al PDF',e)}
+  const body=rows.map(r=>headers.map(h=>String(r[h]??'')));
+  if(typeof doc.autoTable==='function'){
+    doc.autoTable({startY:y,head:[headers],body,theme:'grid',styles:{fontSize:6.5,cellPadding:1.2,overflow:'linebreak'},headStyles:{fillColor:[240,244,249],textColor:[23,32,42]},margin:{left:margin,right:margin,bottom:10},didParseCell:data=>{if(data.section==='body'&&headers[data.column.index]==='Estado'&&data.cell.raw==='SUPERA'){data.cell.styles.textColor=[138,17,17];data.cell.styles.fontStyle='bold'}}});
+  }else{doc.text('No se pudo cargar el módulo de tablas. Se incluye la información gráfica filtrada.',margin,y+5)}
+  const pages=doc.getNumberOfPages();for(let i=1;i<=pages;i++){doc.setPage(i);doc.setFontSize(7);doc.setTextColor(100);doc.text(`Página ${i}/${pages}`,pageW-margin,doc.internal.pageSize.getHeight()-5,{align:'right'})}
+  doc.save(`lims_${activeTab}_${new Date().toISOString().slice(0,10)}.pdf`);
+}
+
+function dateInputValue(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+async function applyQuickDateFilter(kind){
+  const today=new Date(); today.setHours(0,0,0,0);
+  let from;
+  if(kind==='year') from=new Date(today.getFullYear(),0,1);
+  else {from=new Date(today); from.setDate(from.getDate()-364);}
+  document.getElementById('dateFrom').value=dateInputValue(from);
+  document.getElementById('dateTo').value=dateInputValue(today);
+  try{await main()}catch(e){console.error(e);log('ERROR: '+e.message)}
+}
+document.getElementById('currentYearBtn').onclick=()=>applyQuickDateFilter('year');
+document.getElementById('last365Btn').onclick=()=>applyQuickDateFilter('365');
+document.getElementById('loadBtn').onclick=()=>main().catch(e=>{console.error(e);log('ERROR: '+e.message)});document.getElementById('downloadBtn').onclick=download;document.getElementById('downloadPdfBtn').onclick=downloadPDF;document.getElementById('showBlankLimits').onclick=()=>showLimits('blank');document.getElementById('showDupLimits').onclick=()=>showLimits('dup');document.getElementById('closeModal').onclick=()=>document.getElementById('limitsModal').classList.remove('open');document.getElementById('limitsModal').onclick=e=>{if(e.target.id==='limitsModal')e.currentTarget.classList.remove('open')};document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');activeTab=b.dataset.tab;updateParamFilter();render()});document.getElementById('onlyBad').onchange=render;['showEnvase','showLudicas','showPotables','showLegio'].forEach(id=>document.getElementById(id).onchange=render);document.getElementById('paramFilter').onchange=render;document.getElementById('chartMode').onchange=render;
+</script></body></html>
